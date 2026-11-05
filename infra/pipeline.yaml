@@ -1,0 +1,174 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  HireGuard auto-deploy. CodePipeline watches the GitHub repo through an AWS CodeConnections
+  connection (approved once in the console) and, on every push to the branch, CodeBuild runs
+  the backend tests and `cdk deploy`. No AWS keys are stored in GitHub. The build role can
+  only assume the CDK bootstrap roles, which do the actual deploy.
+
+Parameters:
+  GitHubRepo:
+    Type: String
+    Default: akhilsripada/HireGuard
+    Description: owner/repo to deploy from
+  Branch:
+    Type: String
+    Default: main
+  Stage:
+    Type: String
+    Default: prod
+    AllowedPattern: "[a-z0-9-]{1,20}"
+    Description: HireGuard stage to deploy (stack HireGuardStack-<stage>)
+
+Resources:
+  GitHubConnection:
+    Type: AWS::CodeStarConnections::Connection
+    Properties:
+      ConnectionName: hireguard-github
+      ProviderType: GitHub
+
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireOldArtifacts
+            Status: Enabled
+            ExpirationInDays: 14
+
+  BuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: codebuild.amazonaws.com }
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: Build
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: CdkDeployRoles
+                Effect: Allow
+                Action: sts:AssumeRole
+                Resource: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-*-${AWS::AccountId}-${AWS::Region}
+              - Sid: Logs
+                Effect: Allow
+                Action: [logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents]
+                Resource: !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*
+              - Sid: SourceArtifact
+                Effect: Allow
+                Action: [s3:GetObject, s3:GetObjectVersion, s3:GetBucketLocation, s3:ListBucket]
+                Resource:
+                  - !GetAtt ArtifactBucket.Arn
+                  - !Sub ${ArtifactBucket.Arn}/*
+
+  DeployProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: HireGuard-Deploy
+      Description: Tests and deploys HireGuard with cdk deploy
+      ServiceRole: !GetAtt BuildRole.Arn
+      TimeoutInMinutes: 30
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: buildspec.yml
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:7.0
+        EnvironmentVariables:
+          - Name: HG_STAGE
+            Value: !Ref Stage
+      LogsConfig:
+        CloudWatchLogs:
+          Status: ENABLED
+
+  PipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: codepipeline.amazonaws.com }
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: Pipeline
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: UseGitHubConnection
+                Effect: Allow
+                Action: [codestar-connections:UseConnection, codeconnections:UseConnection]
+                Resource: !Ref GitHubConnection
+              - Sid: Artifacts
+                Effect: Allow
+                Action: [s3:GetObject, s3:GetObjectVersion, s3:PutObject, s3:GetBucketVersioning, s3:GetBucketLocation, s3:ListBucket]
+                Resource:
+                  - !GetAtt ArtifactBucket.Arn
+                  - !Sub ${ArtifactBucket.Arn}/*
+              - Sid: RunBuild
+                Effect: Allow
+                Action: [codebuild:StartBuild, codebuild:BatchGetBuilds]
+                Resource: !GetAtt DeployProject.Arn
+
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: HireGuard-Deploy
+      PipelineType: V2
+      ExecutionMode: QUEUED
+      RoleArn: !GetAtt PipelineRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactBucket
+      Triggers:
+        - ProviderType: CodeStarSourceConnection
+          GitConfiguration:
+            SourceActionName: GitHub
+            Push:
+              - Branches:
+                  Includes: [!Ref Branch]
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: GitHub
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Provider: CodeStarSourceConnection
+                Version: "1"
+              Configuration:
+                ConnectionArn: !Ref GitHubConnection
+                FullRepositoryId: !Ref GitHubRepo
+                BranchName: !Ref Branch
+                OutputArtifactFormat: CODE_ZIP
+              OutputArtifacts:
+                - Name: Source
+        - Name: TestAndDeploy
+          Actions:
+            - Name: CdkDeploy
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: "1"
+              Configuration:
+                ProjectName: !Ref DeployProject
+              InputArtifacts:
+                - Name: Source
+
+Outputs:
+  ConnectionArn:
+    Value: !Ref GitHubConnection
+  PipelineUrl:
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/HireGuard-Deploy/view?region=${AWS::Region}

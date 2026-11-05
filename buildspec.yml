@@ -1,0 +1,30 @@
+# CodeBuild steps for the HireGuard-Deploy pipeline (infra/pipeline.yaml).
+# Runs the backend checks, builds the site and deploys HireGuardStack-$HG_STAGE.
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.12
+      nodejs: 20
+    commands:
+      - npm install -g aws-cdk
+  pre_build:
+    commands:
+      - cd "$CODEBUILD_SRC_DIR/backend"
+      - pip install -q -r requirements-dev.txt
+      - ruff check .
+      - python tests/samples/make_samples.py
+      - python -m pytest -q
+  build:
+    commands:
+      - cd "$CODEBUILD_SRC_DIR/frontend"
+      - npm install --no-audit --no-fund
+      - npm run build
+      - cd "$CODEBUILD_SRC_DIR/infra"
+      - pip install -q -r requirements.txt
+      - cdk deploy "HireGuardStack-$HG_STAGE" -c stage="$HG_STAGE" -c region="$AWS_REGION" --require-approval never --outputs-file ../cdk-outputs.json
+  post_build:
+    commands:
+      - cd "$CODEBUILD_SRC_DIR"
+      - '[ -f cdk-outputs.json ] && python -c "import json; d=json.load(open(''cdk-outputs.json'')); print(''Live at'', list(d.values())[0][''WebsiteUrl''])" || true'

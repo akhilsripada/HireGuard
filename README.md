@@ -14,9 +14,13 @@ The whole app is serverless on AWS and deploys with one click, or one command.
 Browser ──> CloudFront + S3 (React site)
    │
    └──> API Gateway (HTTP API, throttled, CORS locked to the site)
-          ├── POST /scan    -> Scan Lambda   -> rules engine, RDAP, Safe Browsing, Reports lookup -> DynamoDB Scans
-          ├── POST /report  -> Report Lambda (Cognito login) -> DynamoDB Reports (hashed contacts only)
-          └── GET  /stats   -> Stats Lambda  -> DynamoDB Scans (byDay index)
+          ├── POST /scan          -> Scan Lambda    -> rules engine, RDAP, Safe Browsing, Reports lookup -> DynamoDB Scans
+          ├── POST /analyze       -> Analyze Lambda -> Claude on Amazon Bedrock (nothing stored, own rate limit)
+          ├── POST /report        -> Report Lambda (Cognito login) -> DynamoDB Reports (hashed contacts) + Library (opt-in, redacted)
+          ├── GET  /library       -> Library Lambda -> DynamoDB Library (byNewest index)
+          ├── GET  /library/sites -> Library Lambda -> DynamoDB Reports (websites with 3+ reports)
+          ├── POST /lookup        -> Library Lambda -> DynamoDB Reports (one contact, by hash)
+          └── GET  /stats         -> Stats Lambda   -> DynamoDB Scans (byDay index)
 CloudWatch dashboard + alarms · Secrets Manager for API keys · all in one CDK stack
 ```
 
@@ -85,6 +89,20 @@ It runs the tests, builds the site, deploys the stack and prints the website URL
 
 After the first deploy, put a [Google Safe Browsing](https://developers.google.com/safe-browsing/v4/get-started) API key into the secret named in the `SafeBrowsingSecretName` output (`{"apiKey": "..."}`). Until then the check is skipped.
 
+### Auto-deploy from GitHub
+
+Every push to `main` is tested and deployed by **AWS CodePipeline** (`infra/pipeline.yaml`): an AWS CodeConnections connection watches the repo, and CodeBuild runs `buildspec.yml` (ruff, pytest, site build, `cdk deploy HireGuardStack-prod`). No AWS keys are stored in GitHub, and the build role can only assume the CDK bootstrap roles. GitHub Actions (`.github/workflows/ci.yml`) still runs the same checks on every push and pull request.
+
+One-time setup (AWS CLI signed in, `cdk bootstrap` done):
+
+```bash
+./setup-pipeline.sh     # creates the HireGuard-Pipeline stack; the GitHub connection starts as PENDING
+# approve it once: CodePipeline console -> Settings -> Connections -> hireguard-github -> Update pending connection
+./setup-pipeline.sh     # connection AVAILABLE: starts the first deploy
+```
+
+Cost at this traffic: CodeBuild includes a monthly free allowance of build minutes and CodePipeline V2 charges per action-minute, so a few deploys a month cost cents. Check current prices on the AWS pricing pages.
+
 **Tear down:** `cd infra && cdk destroy HireGuardStack-prod -c stage=prod` removes everything, including data.
 
 ## Cost
@@ -100,8 +118,10 @@ frontend/  React + Vite website
 docs/      design notes
 deploy.sh  build + test + deploy
 publish-launch.sh  publish the template and code for the Launch Stack button
+setup-pipeline.sh  one-time setup for auto-deploy (CodePipeline)
+buildspec.yml      test + deploy steps the pipeline runs
 ```
 
 ## Status
 
-MVP. Next: GitHub Actions deploy with OIDC, frontend tests, more genuine samples to keep false alarms low.
+MVP. Next: frontend tests, more genuine samples to keep false alarms low.

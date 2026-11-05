@@ -32,6 +32,7 @@ export function Header({ variant = 'home', user, onSignIn, onSignOut }) {
           <div className="nav">
             <a className="nav__link" href="/#how" onClick={scrollTo('how')}>How it works</a>
             <a className="nav__link" href="/#trending" onClick={scrollTo('trending')}>Trending scams</a>
+            <a className="nav__link" {...linkProps('/library')}>Scam library</a>
             <a className="nav__link" {...linkProps('/report')}>Report a scammer</a>
             {user ? (
               <button type="button" className="btn btn--secondary btn--nav" onClick={onSignOut}>Sign out</button>

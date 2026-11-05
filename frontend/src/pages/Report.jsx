@@ -62,7 +62,10 @@ export default function Report() {
   const [sending, setSending] = useState(false)
   const [done, setDone] = useState(null)
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }))
-  const backTo = loadScan() ? '/result' : '/'
+  const scan = loadScan()
+  const backTo = scan ? '/result' : '/'
+  const canShare = Boolean(scan?.message) && scan.result.label !== 'SAFE'
+  const [share, setShare] = useState(false)
   const ct = CONTACT_TYPES[form.contactType]
 
   async function submit(e) {
@@ -79,8 +82,11 @@ export default function Report() {
         platform: form.platform,
         claimedCompany: form.claimedCompany.trim(),
         lostMoney: form.lostMoney,
+        share: canShare && share
+          ? { message: scan.message, label: scan.result.label, score: scan.result.score, flagIds: scan.result.flags.map((f) => f.id) }
+          : undefined,
       })
-      setDone(out.reportCount)
+      setDone({ count: out.reportCount, shared: out.sharedToLibrary })
     } catch (ex) {
       setApiError(ex instanceof ApiError ? ex.message : 'Something went wrong on our side. Please try again in a minute.')
     } finally {
@@ -105,9 +111,13 @@ export default function Report() {
             </span>
             <h2>Thanks — your report was saved</h2>
             <p>
-              {done} {done === 1 ? 'person has' : 'people have'} now reported this contact.
+              {done.count} {done.count === 1 ? 'person has' : 'people have'} now reported this contact.
+              {done.shared ? ' Your message was added to the scam library with personal details removed.' : ''}
             </p>
-            <a className="btn btn--primary" {...linkProps('/')}>Scan another message</a>
+            <div className="actions">
+              <a className="btn btn--primary" {...linkProps('/')}>Scan another message</a>
+              {done.shared && <a className="btn btn--secondary" {...linkProps('/library')}>See the scam library</a>}
+            </div>
           </section>
         ) : needsLogin ? (
           <section className="form-card">
@@ -155,6 +165,16 @@ export default function Report() {
             <label className="checkbox">
               <input type="checkbox" checked={form.lostMoney} onChange={set('lostMoney')} /> I lost money or shared personal details
             </label>
+
+            {canShare && (
+              <label className="checkbox checkbox--share">
+                <input type="checkbox" checked={share} onChange={(e) => setShare(e.target.checked)} />
+                <span>
+                  Add the message I scanned to the public <a {...linkProps('/library')}>scam library</a> to warn others
+                  <span className="checkbox__hint">Names, emails, phone numbers and links are removed first.</span>
+                </span>
+              </label>
+            )}
 
             {apiError && <p className="alert" role="alert">{apiError}</p>}
 

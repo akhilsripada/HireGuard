@@ -6,6 +6,7 @@
   cdk deploy -c alertEmail=you@x.com -> alarm emails
   cdk deploy -c aiSignal=true        -> turn on the Comprehend signal
 """
+import os
 import re
 
 import aws_cdk as cdk
@@ -21,7 +22,10 @@ HireGuardStack(
     f"HireGuardStack-{stage}",
     stage=stage,
     alert_email=app.node.try_get_context("alertEmail"),
-    env=cdk.Environment(region="us-east-1"),
+    # Region: -c region=..., else the AWS profile's region, else us-east-2 (AWS "projects" accounts in the Americas)
+    env=cdk.Environment(
+        region=app.node.try_get_context("region") or os.environ.get("CDK_DEFAULT_REGION") or "us-east-2",
+    ),
     description="HireGuard job-scam checker (serverless)",
 )
 cdk.Tags.of(app).add("project", "hireguard")

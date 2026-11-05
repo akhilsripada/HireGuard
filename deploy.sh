@@ -9,10 +9,14 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 STAGE="${1:-prod}"
-export AWS_REGION=us-east-1 AWS_DEFAULT_REGION=us-east-1
 if [ -z "${AWS_PROFILE:-}" ] && aws configure list-profiles 2>/dev/null | grep -qx hireguard; then
   export AWS_PROFILE=hireguard
 fi
+# Region: HG_REGION, else the profile's region, else us-east-2
+REGION="${HG_REGION:-$(aws configure get region 2>/dev/null || true)}"
+REGION="${REGION:-us-east-2}"
+export AWS_REGION="$REGION" AWS_DEFAULT_REGION="$REGION" CDK_DEFAULT_REGION="$REGION"
+echo "Deploying to region: $REGION"
 
 echo "==> 0/4 Check AWS sign-in"
 if ! aws sts get-caller-identity >/dev/null 2>&1; then
@@ -21,7 +25,7 @@ if ! aws sts get-caller-identity >/dev/null 2>&1; then
 fi
 if ! aws cloudformation describe-stacks --stack-name CDKToolkit >/dev/null 2>&1; then
   echo "First deploy in this account: preparing it for CDK (one time)…"
-  cdk bootstrap "aws://$(aws sts get-caller-identity --query Account --output text)/us-east-1"
+  cdk bootstrap "aws://$(aws sts get-caller-identity --query Account --output text)/$REGION"
 fi
 
 echo "==> 1/4 Backend tests"
@@ -40,7 +44,7 @@ echo "==> 3/4 CDK dependencies"
   .venv/bin/pip install -q -r requirements.txt )
 
 echo "==> 4/4 Deploy stage '$STAGE' (takes ~5-10 minutes the first time)"
-( cd infra && source .venv/bin/activate && cdk deploy "HireGuardStack-$STAGE" -c stage="$STAGE" --require-approval never --outputs-file ../cdk-outputs.json )
+( cd infra && source .venv/bin/activate && cdk deploy "HireGuardStack-$STAGE" -c stage="$STAGE" -c region="$REGION" --require-approval never --outputs-file ../cdk-outputs.json )
 
 echo
 echo "Done. Your site:"

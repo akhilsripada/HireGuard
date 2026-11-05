@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import Icon from '../components/Icon'
 import { VerdictCard } from '../components/Verdict'
 import { FlagCard } from '../components/Cards'
+import AiOpinion from '../components/AiOpinion'
 import { loadScan } from '../lib/store'
 import { linkProps, navigate } from '../lib/router'
 import { LABELS, SKIPPED_NAMES } from '../copy'
@@ -56,6 +57,7 @@ export default function Result() {
           {skipped.length > 0 && (
             <p className="skipped">Some checks were skipped: {skipped.join(', ')}. The score uses the remaining checks.</p>
           )}
+          <AiOpinion message={message} flagIds={result.flags.map((f) => f.id)} />
           {message && (
             <details className="details">
               <summary>Show the message you scanned</summary>

@@ -5,6 +5,9 @@ import scamMock from '../mocks/scan-likely-scam.json'
 import suspiciousMock from '../mocks/scan-suspicious.json'
 import safeMock from '../mocks/scan-safe.json'
 import statsMock from '../mocks/stats-week.json'
+import analyzeMock from '../mocks/analyze.json'
+import libraryMock from '../mocks/library.json'
+import sitesMock from '../mocks/sites.json'
 
 export class ApiError extends Error {
   constructor(message, status) {
@@ -16,6 +19,7 @@ export class ApiError extends Error {
 const MESSAGES = {
   429: 'Too many checks in a short time. Please wait a minute and try again.',
   401: 'Please sign in to report a scammer.',
+  503: "AI analysis isn't available right now.",
   500: 'Something went wrong on our side. Please try again in a minute.',
 }
 
@@ -63,7 +67,7 @@ export async function reportContact(report) {
   if (getConfig().mock) {
     await wait(500)
     mockReports += 1
-    return { reportCount: mockReports }
+    return { reportCount: mockReports, sharedToLibrary: Boolean(report.share) }
   }
   return call('/report', { method: 'POST', body: report, auth: true })
 }
@@ -74,4 +78,43 @@ export async function getStats(range) {
     return { ...statsMock, range }
   }
   return call(`/stats?range=${encodeURIComponent(range)}`)
+}
+
+export async function analyzeMessage({ message, flagIds }) {
+  if (getConfig().mock) {
+    await wait(1400)
+    return structuredClone(analyzeMock)
+  }
+  return call('/analyze', { method: 'POST', body: { message, flagIds } })
+}
+
+export async function getLibrary({ type = '', cursor = '' } = {}) {
+  if (getConfig().mock) {
+    await wait(300)
+    const items = type ? libraryMock.items.filter((i) => i.scamType === type) : libraryMock.items
+    return { items: structuredClone(items), cursor: null }
+  }
+  const q = new URLSearchParams()
+  if (type) q.set('type', type)
+  if (cursor) q.set('cursor', cursor)
+  return call(`/library?${q}`)
+}
+
+export async function getReportedSites() {
+  if (getConfig().mock) {
+    await wait(250)
+    return structuredClone(sitesMock)
+  }
+  return call('/library/sites')
+}
+
+export async function lookupContact({ contactType, contact }) {
+  if (getConfig().mock) {
+    await wait(400)
+    const known = /amazon|gmail|555/i.test(contact)
+    return known
+      ? { reportCount: 14, lastReportedAt: '2026-11-03T17:20:00+00:00', platforms: ['EMAIL', 'TEXT'], claimedCompanies: ['Amazon'], lostMoneyCount: 3 }
+      : { reportCount: 0 }
+  }
+  return call('/lookup', { method: 'POST', body: { contactType, contact } })
 }

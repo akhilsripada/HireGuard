@@ -1,0 +1,130 @@
+{
+  "items": [
+    {
+      "id": "mock-0",
+      "createdAt": "2026-11-03T18:12:00+00:00",
+      "scamType": "PAY_FOR_EQUIPMENT",
+      "label": "LIKELY_SCAM",
+      "score": 100,
+      "flagIds": [
+        "PAY_UPFRONT",
+        "FREE_EMAIL_BIG_BRAND",
+        "LOOKALIKE_DOMAIN",
+        "CHAT_APP_INTERVIEW",
+        "TOO_GOOD_PAY",
+        "URGENCY",
+        "MULTIPLE_SIGNS"
+      ],
+      "claimedCompany": "Amazon",
+      "platform": "EMAIL",
+      "text": "Hi! Your resume was selected for a Remote Data Entry Associate role at Amazon ($42/hr). Interviews are conducted on Telegram - add [handle]. Once hired, purchase your home-office kit ($450) through our approved vendor and you'll be reimbursed with your first check. Please respond within 2 hours to keep your spot."
+    },
+    {
+      "id": "mock-1",
+      "createdAt": "2026-11-03T09:40:00+00:00",
+      "scamType": "TASK_SCAMS",
+      "label": "LIKELY_SCAM",
+      "score": 100,
+      "flagIds": [
+        "GIFT_CARD_CRYPTO",
+        "TASK_SCAM",
+        "TOO_GOOD_PAY",
+        "MULTIPLE_SIGNS"
+      ],
+      "claimedCompany": "",
+      "platform": "TEXT",
+      "text": "Earn $300 a day from home! Complete 40 simple tasks rating hotels to unlock your commission. New members must top up their account with USDT to start the next set of tasks."
+    },
+    {
+      "id": "mock-2",
+      "createdAt": "2026-11-02T21:05:00+00:00",
+      "scamType": "FAKE_CHECK",
+      "label": "LIKELY_SCAM",
+      "score": 100,
+      "flagIds": [
+        "FAKE_CHECK",
+        "GIFT_CARD_CRYPTO"
+      ],
+      "claimedCompany": "",
+      "platform": "LINKEDIN",
+      "text": "Congratulations, you have been hired as an Administrative Assistant. We will mail you a check for $2,800. Deposit the check using mobile deposit, keep $400 as your first week pay and send the remaining balance to our equipment supplier via Zelle."
+    },
+    {
+      "id": "mock-3",
+      "createdAt": "2026-11-02T14:22:00+00:00",
+      "scamType": "RESHIPPING",
+      "label": "LIKELY_SCAM",
+      "score": 75,
+      "flagIds": [
+        "RESHIPPING",
+        "FREE_EMAIL_HR"
+      ],
+      "claimedCompany": "",
+      "platform": "CHAT_APP",
+      "text": "We are hiring a Package Inspector to work from home. You will receive parcels at your address, check them and reship them using the prepaid labels we email you. $2,500 per month, no experience needed."
+    },
+    {
+      "id": "mock-4",
+      "createdAt": "2026-11-01T16:48:00+00:00",
+      "scamType": "BRAND_IMPERSONATION",
+      "label": "LIKELY_SCAM",
+      "score": 100,
+      "flagIds": [
+        "ASKS_SENSITIVE_DATA",
+        "FREE_EMAIL_BIG_BRAND",
+        "CHAT_APP_INTERVIEW",
+        "TOO_GOOD_PAY",
+        "MULTIPLE_SIGNS"
+      ],
+      "claimedCompany": "Google",
+      "platform": "JOB_SITE",
+      "text": "Hello, I am a recruiter for Google. You have been selected for a remote typing job, $38/hr, flexible hours. Interviews are done on Telegram. Please send a copy of your driver's license to proceed."
+    },
+    {
+      "id": "mock-5",
+      "createdAt": "2026-10-31T11:30:00+00:00",
+      "scamType": "TASK_SCAMS",
+      "label": "LIKELY_SCAM",
+      "score": 100,
+      "flagIds": [
+        "TASK_SCAM",
+        "CHAT_APP_INTERVIEW",
+        "TOO_GOOD_PAY",
+        "URGENCY",
+        "MULTIPLE_SIGNS"
+      ],
+      "claimedCompany": "",
+      "platform": "EMAIL",
+      "text": "Hi, this is Lisa from the HR team. Part-time online job, earn $500 a day by liking videos for commission. Add me on WhatsApp to begin. Limited positions available."
+    },
+    {
+      "id": "mock-6",
+      "createdAt": "2026-10-30T19:02:00+00:00",
+      "scamType": "BRAND_IMPERSONATION",
+      "label": "LIKELY_SCAM",
+      "score": 70,
+      "flagIds": [
+        "ASKS_SENSITIVE_DATA",
+        "FREE_EMAIL_BIG_BRAND"
+      ],
+      "claimedCompany": "Walmart",
+      "platform": "TEXT",
+      "text": "Good news! You are selected for the Customer Support position at Walmart. To process payroll please reply with your SSN, bank account number and routing number today."
+    },
+    {
+      "id": "mock-7",
+      "createdAt": "2026-10-29T08:15:00+00:00",
+      "scamType": "UNTRACEABLE_PAYMENT",
+      "label": "LIKELY_SCAM",
+      "score": 85,
+      "flagIds": [
+        "GIFT_CARD_CRYPTO",
+        "FREE_EMAIL_BIG_BRAND"
+      ],
+      "claimedCompany": "",
+      "platform": "LINKEDIN",
+      "text": "Hello, I am looking for a personal assistant to help with errands. First task: buy three $100 Apple gift cards and send me photos of the back of the cards. You will be paid $800 per week."
+    }
+  ],
+  "cursor": null
+}

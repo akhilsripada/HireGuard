@@ -120,7 +120,7 @@ function Trending() {
       <div className="section-head">
         <div>
           <h2>Trending scams</h2>
-          <p className="section__lead">The scam types people report most on HireGuard. Know the pattern before it reaches you.</p>
+          <p className="section__lead">The scam types people report most on HireGuard. Know the pattern before it reaches you. <a {...linkProps('/library')}>Browse the scam library</a></p>
         </div>
         <div className="segmented" role="group" aria-label="Time range">
           <button type="button" aria-pressed={range === 'week'} onClick={() => setRange('week')}>This week</button>

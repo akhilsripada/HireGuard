@@ -1,0 +1,22 @@
+{
+  "model": "Claude on Amazon Bedrock",
+  "scamType": "PAY_FOR_EQUIPMENT",
+  "confidence": "HIGH",
+  "summary": "This is a fake remote job that impersonates Amazon to get you to pay $450 for 'equipment' before you start. The money goes to the scammers and the reimbursement never comes.",
+  "tactics": [
+    "Impersonates a well-known employer",
+    "Pay-first equipment purchase",
+    "Moves the interview to Telegram",
+    "Two-hour deadline to stop you checking"
+  ],
+  "questionsToAsk": [
+    "Can you send this offer from an @amazon.com email address?",
+    "What is the job ID on amazon.jobs so I can apply there directly?",
+    "Can we schedule a video interview with the hiring manager?"
+  ],
+  "howToVerify": [
+    "Search the role yourself on amazon.jobs instead of using their link",
+    "Never buy equipment for a new job; real employers ship it to you",
+    "Report the sender at reportfraud.ftc.gov"
+  ]
+}

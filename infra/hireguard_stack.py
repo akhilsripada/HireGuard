@@ -71,6 +71,20 @@ class HireGuardStack(Stack):
             **table_defaults,
         )
 
+        # Scam library: messages people chose to share, personal details removed
+        library = ddb.Table(
+            self, "Library",
+            partition_key=ddb.Attribute(name="entryId", type=ddb.AttributeType.STRING),
+            time_to_live_attribute="expiresAt",
+            **table_defaults,
+        )
+        library.add_global_secondary_index(
+            index_name="byNewest",
+            partition_key=ddb.Attribute(name="kind", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="createdAt", type=ddb.AttributeType.STRING),
+            projection_type=ddb.ProjectionType.ALL,
+        )
+
         # Safe Browsing key: deploys with a placeholder; set the real key in the console afterwards.
         safe_browsing = secrets.Secret(
             self, "SafeBrowsingKey",
@@ -143,28 +157,34 @@ class HireGuardStack(Stack):
             "SCANS_TABLE": scans.table_name,
             "REPORTS_TABLE": reports.table_name,
             "DOMAIN_CACHE_TABLE": domain_cache.table_name,
+            "LIBRARY_TABLE": library.table_name,
             "SAFE_BROWSING_SECRET_ARN": safe_browsing.secret_arn,
             "AI_SIGNAL_ENABLED": str(self.node.try_get_context("aiSignal") or "false").lower(),
             "EXTERNAL_TIMEOUT_S": "1.5",
             "LOG_LEVEL": "INFO",
         }
 
-        def fn(name: str, handler: str, timeout: int = 10) -> lambda_.Function:
+        bedrock_model = str(self.node.try_get_context("bedrockModel") or "us.anthropic.claude-haiku-4-5-20251001-v1:0")
+
+        def fn(name: str, handler: str, timeout: int = 10, memory: int = 256, extra_env: dict | None = None) -> lambda_.Function:
             return lambda_.Function(
                 self, name,
                 runtime=lambda_.Runtime.PYTHON_3_12,
                 architecture=lambda_.Architecture.ARM_64,
                 handler=handler,
                 code=code,
-                memory_size=256,
+                memory_size=memory,
                 timeout=Duration.seconds(timeout),
-                environment=common_env,
+                environment={**common_env, **(extra_env or {})},
                 log_retention=logs.RetentionDays.TWO_WEEKS,
             )
 
         scan_fn = fn("ScanFn", "handlers.scan_handler.handler")
         report_fn = fn("ReportFn", "handlers.report_handler.handler")
         stats_fn = fn("StatsFn", "handlers.stats_handler.handler")
+        library_fn = fn("LibraryFn", "handlers.library_handler.handler")
+        analyze_fn = fn("AnalyzeFn", "handlers.analyze_handler.handler", timeout=29, memory=512,
+                        extra_env={"BEDROCK_MODEL_ID": bedrock_model})
 
         # Least privilege: each function gets only what it touches
         scans.grant_write_data(scan_fn)
@@ -173,7 +193,23 @@ class HireGuardStack(Stack):
         safe_browsing.grant_read(scan_fn)
         scan_fn.add_to_role_policy(iam.PolicyStatement(actions=["comprehend:DetectKeyPhrases"], resources=["*"]))
         reports.grant_read_write_data(report_fn)
+        library.grant_write_data(report_fn)
         scans.grant_read_data(stats_fn)
+        library.grant_read_data(library_fn)
+        reports.grant_read_data(library_fn)
+        # Bedrock: the US cross-region inference profile routes to the model in several US regions
+        analyze_fn.add_to_role_policy(iam.PolicyStatement(
+            actions=["bedrock:InvokeModel", "bedrock:Converse"],
+            resources=[
+                f"arn:aws:bedrock:*:{self.account}:inference-profile/*",
+                "arn:aws:bedrock:*::foundation-model/*",
+            ],
+        ))
+        # First call to a marketplace model may need to confirm the subscription
+        analyze_fn.add_to_role_policy(iam.PolicyStatement(
+            actions=["aws-marketplace:ViewSubscriptions", "aws-marketplace:Subscribe"],
+            resources=["*"],
+        ))
 
         # ---------- API ----------
         api = apigw.HttpApi(
@@ -186,16 +222,26 @@ class HireGuardStack(Stack):
                 max_age=Duration.hours(1),
             ),
         )
-        api.add_stage(
+        stage_ = api.add_stage(
             "DefaultStage",
             stage_name="$default",
             auto_deploy=True,
             throttle=apigw.ThrottleSettings(rate_limit=10, burst_limit=20),
         )
+        # AI calls cost money: tighter limit on that one route
+        cfn_stage = stage_.node.default_child
+        cfn_stage.route_settings = {
+            "POST /analyze": {"ThrottlingRateLimit": 2, "ThrottlingBurstLimit": 4},
+        }
         jwt_auth = authorizers.HttpUserPoolAuthorizer("UserPoolAuth", user_pool, user_pool_clients=[client])
         api.add_routes(path="/scan", methods=[apigw.HttpMethod.POST], integration=integrations.HttpLambdaIntegration("ScanInt", scan_fn))
         api.add_routes(path="/report", methods=[apigw.HttpMethod.POST], integration=integrations.HttpLambdaIntegration("ReportInt", report_fn), authorizer=jwt_auth)
         api.add_routes(path="/stats", methods=[apigw.HttpMethod.GET], integration=integrations.HttpLambdaIntegration("StatsInt", stats_fn))
+        api.add_routes(path="/analyze", methods=[apigw.HttpMethod.POST], integration=integrations.HttpLambdaIntegration("AnalyzeInt", analyze_fn))
+        library_int = integrations.HttpLambdaIntegration("LibraryInt", library_fn)
+        api.add_routes(path="/library", methods=[apigw.HttpMethod.GET], integration=library_int)
+        api.add_routes(path="/library/sites", methods=[apigw.HttpMethod.GET], integration=library_int)
+        api.add_routes(path="/lookup", methods=[apigw.HttpMethod.POST], integration=library_int)
         api_url = f"https://{api.api_id}.execute-api.{self.region}.amazonaws.com"
 
         # ---------- Deploy the built site + runtime config ----------
@@ -225,7 +271,7 @@ class HireGuardStack(Stack):
             alarm_topic.add_subscription(subs.EmailSubscription(alert_email))
         alarm_action = cw_actions.SnsAction(alarm_topic)
 
-        for f, label in ((scan_fn, "Scan"), (report_fn, "Report"), (stats_fn, "Stats")):
+        for f, label in ((scan_fn, "Scan"), (report_fn, "Report"), (stats_fn, "Stats"), (library_fn, "Library"), (analyze_fn, "Analyze")):
             alarm = cw.Alarm(
                 self, f"{label}Errors",
                 metric=f.metric_errors(period=Duration.minutes(5), statistic="Sum"),
@@ -259,7 +305,7 @@ class HireGuardStack(Stack):
         dashboard.add_widgets(
             cw.GraphWidget(title="Scans per 5 min", left=[scan_fn.metric_invocations(period=Duration.minutes(5), statistic="Sum")]),
             cw.GraphWidget(title="Scan latency p95 (ms)", left=[scan_fn.metric_duration(period=Duration.minutes(5), statistic="p95")]),
-            cw.GraphWidget(title="Lambda errors", left=[f.metric_errors(period=Duration.minutes(5), statistic="Sum") for f in (scan_fn, report_fn, stats_fn)]),
+            cw.GraphWidget(title="Lambda errors", left=[f.metric_errors(period=Duration.minutes(5), statistic="Sum") for f in (scan_fn, report_fn, stats_fn, library_fn, analyze_fn)]),
             cw.GraphWidget(title="API 4xx / 5xx", left=[
                 cw.Metric(namespace="AWS/ApiGateway", metric_name="4xx", dimensions_map={"ApiId": api.api_id}, period=Duration.minutes(5), statistic="Sum"),
                 api_5xx,

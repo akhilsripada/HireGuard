@@ -1,0 +1,35 @@
+{
+  "minReports": 3,
+  "sites": [
+    {
+      "domain": "amazon-remote-jobs.net",
+      "reportCount": 23,
+      "lastReportedAt": "2026-11-03T17:20:00+00:00",
+      "claimedCompanies": [
+        "Amazon"
+      ]
+    },
+    {
+      "domain": "micr0soft-careers.com",
+      "reportCount": 11,
+      "lastReportedAt": "2026-11-02T10:05:00+00:00",
+      "claimedCompanies": [
+        "Microsoft"
+      ]
+    },
+    {
+      "domain": "hotel-boost-app.example",
+      "reportCount": 8,
+      "lastReportedAt": "2026-11-01T22:41:00+00:00",
+      "claimedCompanies": []
+    },
+    {
+      "domain": "deloitte-hiring.net",
+      "reportCount": 4,
+      "lastReportedAt": "2026-10-30T13:12:00+00:00",
+      "claimedCompanies": [
+        "Deloitte"
+      ]
+    }
+  ]
+}

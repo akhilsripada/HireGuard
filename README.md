@@ -36,6 +36,14 @@ External checks (RDAP domain age, Google Safe Browsing, optional Amazon Comprehe
 
 **Privacy:** message text is never stored or logged. Reported emails, phones and domains are stored only as SHA-256 hashes.
 
+## Features
+
+- **Scan**: paste a job message, get a 0–100 score with every red flag explained.
+- **AI second opinion**: Claude on Amazon Bedrock (`POST /analyze`) explains the scam type, the tactics used, questions a real recruiter could answer and how to verify. It never changes the rule-based score; the message is treated strictly as data, the answer is forced into a fixed JSON shape and clipped, and the route has its own tight rate limit.
+- **Report**: signed-in users report an email, phone or website (stored only as a SHA-256 hash), and can choose to share the scanned message to the library.
+- **Scam library** (`/library`): past scam messages with names, emails, phones and links removed; scam websites reported by 3+ people; and a one-at-a-time lookup for any email, phone or website. Emails and phone numbers are never listed publicly, since a spoofed address could wrongly brand a real person.
+- **Trending scams**: most common scam types this week or month.
+
 ## Run it locally (no AWS needed)
 
 ```bash
@@ -50,14 +58,16 @@ cd ../frontend && npm install && npm run dev     # http://localhost:5173
 
 ## Deploy to AWS
 
-Prerequisites: Python 3.12+, Node 20+, Docker not required, AWS CLI v2 signed in to your account, `npm install -g aws-cdk`, and `cdk bootstrap` run once in `us-east-1`.
+Prerequisites: Python 3.12+, Node 20+, Docker not required, AWS CLI v2 signed in to your account, `npm install -g aws-cdk`, and `cdk bootstrap` (deploy.sh runs it for you). Region: your AWS profile's region, else `us-east-2`; override with `HG_REGION=us-east-1 ./deploy.sh`.
 
 ```bash
 ./deploy.sh            # stage "prod"
 ./deploy.sh akhil      # a separate copy for testing
 ```
 
-It runs the tests, builds the site, deploys the stack and prints the website URL. Optional flags (pass to `cdk deploy` in `infra/`): `-c alertEmail=you@example.com` for alarm emails, `-c aiSignal=true` to turn on the Comprehend signal.
+It runs the tests, builds the site, deploys the stack and prints the website URL.
+
+**AI feature:** the first time, open the Amazon Bedrock console in your region, go to **Model catalog**, open **Claude Haiku 4.5** and complete any one-time access step AWS asks for. Until then the AI card shows "AI analysis isn't available right now" and everything else works. To use another model: `-c bedrockModel=<inference profile id>`. Optional flags (pass to `cdk deploy` in `infra/`): `-c alertEmail=you@example.com` for alarm emails, `-c aiSignal=true` to turn on the Comprehend signal.
 
 After the first deploy, put a [Google Safe Browsing](https://developers.google.com/safe-browsing/v4/get-started) API key into the secret named in the `SafeBrowsingSecretName` output (`{"apiKey": "..."}`). Until then the check is skipped.
 

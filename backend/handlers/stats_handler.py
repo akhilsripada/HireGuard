@@ -8,22 +8,11 @@ from datetime import datetime, timedelta, timezone
 
 from boto3.dynamodb.conditions import Key
 
+from hireguard.scam_types import types_for
+
 from .common import log_event, response, table
 
 RANGES = {"week": 7, "month": 30}
-
-# Flag IDs grouped into the scam types shown on the Home page
-TYPES = {
-    "TASK_SCAM": "TASK_SCAMS",
-    "PAY_UPFRONT": "PAY_FOR_EQUIPMENT",
-    "FAKE_CHECK": "FAKE_CHECK",
-    "FREE_EMAIL_BIG_BRAND": "BRAND_IMPERSONATION",
-    "LOOKALIKE_DOMAIN": "BRAND_IMPERSONATION",
-    "RESHIPPING": "RESHIPPING",
-    "GIFT_CARD_CRYPTO": "UNTRACEABLE_PAYMENT",
-    "ASKS_SENSITIVE_DATA": "SENSITIVE_DATA",
-    "CHAT_APP_INTERVIEW": "CHAT_APP_INTERVIEW",
-}
 
 
 def count_types(start_day: datetime, days: int) -> Counter:
@@ -42,7 +31,7 @@ def count_types(start_day: datetime, days: int) -> Counter:
             for item in page.get("Items", []):
                 if item.get("label") == "SAFE":
                     continue
-                for t in {TYPES[f] for f in item.get("flagIds", []) if f in TYPES}:
+                for t in types_for(item.get("flagIds", [])):
                     counts[t] += 1
             if "LastEvaluatedKey" not in page:
                 break

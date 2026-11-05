@@ -41,6 +41,25 @@ const PATHS = {
     </>
   ),
   chevronLeft: <path d="M15 18l-6-6 6-6" />,
+  sparkle: (
+    <>
+      <path d="M12 3l1.8 4.6L18.5 9l-4.7 1.6L12 15l-1.8-4.4L5.5 9l4.7-1.4z" />
+      <path d="M19 15l.8 2 2 .8-2 .7-.8 2-.8-2-2-.7 2-.8z" />
+    </>
+  ),
+  book: (
+    <>
+      <path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z" />
+      <path d="M4 19V5" />
+      <path d="M9 7h6M9 11h6" />
+    </>
+  ),
+  globeWarn: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18" />
+    </>
+  ),
   warning: (
     <>
       <path d="M12 9v4M12 17h.01" />

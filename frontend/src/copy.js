@@ -119,3 +119,40 @@ export function timeAgo(iso) {
   const days = Math.round(hours / 24)
   return `${days} days ago`
 }
+
+// Short names for flags, used as chips in the scam library
+export const FLAG_NAMES = {
+  PAY_UPFRONT: 'Pay before you start',
+  GIFT_CARD_CRYPTO: 'Gift card / crypto',
+  FAKE_CHECK: 'Fake check',
+  ASKS_SENSITIVE_DATA: 'Asks for SSN / bank',
+  TASK_SCAM: 'Task scam',
+  RESHIPPING: 'Reshipping',
+  CHAT_APP_INTERVIEW: 'Chat-app interview',
+  NO_INTERVIEW: 'No interview',
+  TOO_GOOD_PAY: 'Too-good pay',
+  URGENCY: 'Urgency',
+  FREE_EMAIL_BIG_BRAND: 'Free email, big brand',
+  FREE_EMAIL_HR: 'HR on free email',
+  LOOKALIKE_DOMAIN: 'Lookalike domain',
+  NEW_DOMAIN: 'New domain',
+  UNSAFE_LINK: 'Unsafe link',
+  COMMUNITY_REPORTED: 'Reported before',
+  MULTIPLE_SIGNS: 'Several signs',
+  AI_SIGNAL: 'AI signal',
+}
+
+export const SCAM_TYPE_NAMES = {
+  ...Object.fromEntries(Object.entries(TREND_TYPES).map(([k, v]) => [k, v.name])),
+  OTHER: 'Other scams',
+  OTHER_SCAM: 'Other scam',
+  LIKELY_GENUINE: 'Looks genuine',
+  UNCLEAR: 'Unclear',
+}
+
+export const PLATFORM_NAMES = Object.fromEntries(PLATFORM_OPTIONS)
+
+export function formatDate(iso) {
+  if (!iso) return ''
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}

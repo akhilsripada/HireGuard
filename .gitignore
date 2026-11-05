@@ -23,3 +23,7 @@ cdk-outputs.json
 .DS_Store
 .vscode/
 .idea/
+
+# Launch Stack build output
+infra/cdk.out.launch/
+launch-url.txt

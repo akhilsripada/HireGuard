@@ -4,7 +4,9 @@
 
 Job scams are growing fast: US reports of job and employment-agency scams tripled from 2020 to 2024, and reported losses grew from **$90 million to $501 million** ([FTC data via Insurance Journal](https://www.insurancejournal.com/news/national/2025/03/10/815001.htm)).
 
-The whole app is serverless on AWS and deploys with one command.
+The whole app is serverless on AWS and deploys with one click, or one command.
+
+[![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/create/review?templateURL=https%3A%2F%2Fhireguard-launch-705160055248.s3.us-east-2.amazonaws.com%2Fhireguard.template.json&stackName=HireGuard)
 
 ## How it works
 
@@ -58,6 +60,18 @@ cd ../frontend && npm install && npm run dev     # http://localhost:5173
 
 ## Deploy to AWS
 
+### One click (no tools needed)
+
+1. Sign in to your AWS account and click **Launch Stack** above. It opens CloudFormation in **us-east-2 (Ohio)** with the template filled in.
+2. Tick **I acknowledge that AWS CloudFormation might create IAM resources** and click **Create stack**.
+3. Wait about 5–10 minutes for **CREATE_COMPLETE**, then open the **Outputs** tab and click **WebsiteUrl**.
+
+To remove it, delete the **HireGuard** stack in CloudFormation. The button deploys to us-east-2 only, because Lambda code has to come from a bucket in the same region.
+
+Maintainers: `./publish-launch.sh` builds the stack and uploads the template and code to the public read-only bucket behind the button (`hireguard-launch-<account id>`). Run it again to ship new code through the button.
+
+### One command (from source)
+
 Prerequisites: Python 3.12+, Node 20+, Docker not required, AWS CLI v2 signed in to your account, `npm install -g aws-cdk`, and `cdk bootstrap` (deploy.sh runs it for you). Region: your AWS profile's region, else `us-east-2`; override with `HG_REGION=us-east-1 ./deploy.sh`.
 
 ```bash
@@ -85,8 +99,9 @@ infra/     AWS CDK app (Python): the whole stack
 frontend/  React + Vite website
 docs/      design notes
 deploy.sh  build + test + deploy
+publish-launch.sh  publish the template and code for the Launch Stack button
 ```
 
 ## Status
 
-MVP. Next: Launch Stack button (CloudFormation template in S3), GitHub Actions deploy with OIDC, frontend tests, more genuine samples to keep false alarms low.
+MVP. Next: GitHub Actions deploy with OIDC, frontend tests, more genuine samples to keep false alarms low.

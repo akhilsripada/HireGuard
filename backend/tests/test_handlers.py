@@ -41,7 +41,7 @@ class FakeTable:
             day = KeyConditionExpression._values[1]
             return {"Items": [i for i in self.items.values() if i.get("day") == day]}
         # byNewest: library entries, newest first
-        items = sorted(self.items.values(), key=lambda i: i["createdAt"], reverse=not kw.get("ScanIndexForward", True) is True)
+        items = sorted(self.items.values(), key=lambda i: i["createdAt"], reverse=kw.get("ScanIndexForward", True) is not True)
         return {"Items": items[: kw.get("Limit", 1000)]}
 
     def scan(self, **_):
@@ -154,7 +154,7 @@ def get(route, params=None):
 
 
 def test_report_can_share_redacted_message_to_library():
-    with fake_aws() as t:
+    with fake_aws():
         report = {
             "contactType": "EMAIL", "contact": "careers.amazon.hr@gmail.com", "platform": "EMAIL", "claimedCompany": "Amazon",
             "share": {"message": MOCKUP + " Text me at +1 555 010 2000.", "label": "LIKELY_SCAM", "score": 100,

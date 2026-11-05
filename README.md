@@ -6,6 +6,10 @@ Job scams are growing fast: US reports of job and employment-agency scams triple
 
 The whole app is serverless on AWS and deploys with one click, or runs on your own computer with one command.
 
+**Watch the 2-minute walkthrough** (what it does, how it's built, and how to use or deploy it):
+
+[![HireGuard walkthrough video](media/walkthrough-thumbnail.jpg)](media/hireguard-walkthrough.mp4)
+
 ## Try it
 
 | Way | What you need | How |
@@ -152,6 +156,7 @@ backend/   detection engine (hireguard/), Lambda handlers (handlers/), local ser
 infra/     AWS CDK app (Python): the whole stack, plus pipeline.yaml for auto-deploy
 frontend/  React + Vite website; prebuilt/ is the built copy run.py serves
 run.py     run HireGuard on your computer (python3 run.py --share)
+media/     walkthrough video and its preview image
 deploy.sh  build + test + deploy
 publish-launch.sh  publish the template and code for the Launch Stack button
 setup-pipeline.sh  one-time setup for auto-deploy (CodePipeline)

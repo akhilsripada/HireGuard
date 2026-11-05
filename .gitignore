@@ -27,3 +27,6 @@ cdk-outputs.json
 # Launch Stack build output
 infra/cdk.out.launch/
 launch-url.txt
+
+# Local mode (python3 run.py) data
+.local-data/

@@ -1,0 +1,8 @@
+{
+  "mock": true,
+  "apiUrl": "",
+  "cognitoDomain": "",
+  "cognitoClientId": "",
+  "region": "us-east-1",
+  "stage": "local"
+}

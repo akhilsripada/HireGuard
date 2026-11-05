@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import Icon from './Icon'
 import { analyzeMessage } from '../lib/api'
+import { getConfig } from '../lib/config'
 import { SCAM_TYPE_NAMES } from '../copy'
 
 // Runs after the score is shown, so a slow or failed AI call never blocks the result.
 export default function AiOpinion({ message, flagIds }) {
-  const [state, setState] = useState({ status: 'idle' })
+  // A local copy (python3 run.py) has AI off unless it was started with --ai
+  const off = Boolean(getConfig().local) && !getConfig().ai
+  const [state, setState] = useState({ status: off ? 'off' : 'idle' })
 
   async function run() {
     setState({ status: 'loading' })
@@ -17,7 +20,7 @@ export default function AiOpinion({ message, flagIds }) {
   }
 
   useEffect(() => {
-    if (message) run()
+    if (message && !off) run()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message])
 
@@ -43,6 +46,12 @@ export default function AiOpinion({ message, flagIds }) {
         <div className="ai__loading">
           <span className="spinner spinner--dark" aria-hidden="true" />
           Reading the message…
+        </div>
+      )}
+
+      {state.status === 'off' && (
+        <div className="ai__error">
+          <p>The AI second opinion is off in this local copy. Start it with <code>python3 run.py --ai</code> (needs AWS credentials with Amazon Bedrock access).</p>
         </div>
       )}
 

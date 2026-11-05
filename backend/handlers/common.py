@@ -7,14 +7,25 @@ import time
 from functools import lru_cache
 from typing import Any
 
-import boto3
-from botocore.config import Config
-
 log = logging.getLogger("hireguard")
 log.setLevel(os.environ.get("LOG_LEVEL", "INFO"))
 
-# Short timeouts and no retries for calls on the request path
-FAST = Config(connect_timeout=1, read_timeout=float(os.environ.get("EXTERNAL_TIMEOUT_S", "1.5")), retries={"max_attempts": 1})
+# boto3 is imported lazily so the handlers also run locally (run.py) without it installed.
+_table_override = None
+
+
+def fast_config():
+    """Short timeouts and no retries for AWS calls on the request path."""
+    from botocore.config import Config
+
+    return Config(connect_timeout=1, read_timeout=float(os.environ.get("EXTERNAL_TIMEOUT_S", "1.5")), retries={"max_attempts": 1})
+
+
+def use_tables(factory) -> None:
+    """Swap DynamoDB for another table implementation (local mode and tests). None restores DynamoDB."""
+    global _table_override
+    _table_override = factory
+    _dynamo_table.cache_clear()
 
 
 class BadRequest(Exception):
@@ -49,14 +60,24 @@ def log_event(event_name: str, **fields: Any) -> None:
     log.info(json.dumps({"event": event_name, **fields}))
 
 
-@lru_cache(maxsize=None)
 def table(env_name: str):
+    if _table_override is not None:
+        return _table_override(env_name)
+    return _dynamo_table(env_name)
+
+
+@lru_cache(maxsize=None)
+def _dynamo_table(env_name: str):
+    import boto3
+
     return boto3.resource("dynamodb").Table(os.environ[env_name])
 
 
 @lru_cache(maxsize=None)
 def secret_value(arn: str) -> dict:
     """Read once per cold start; secrets never reach logs."""
+    import boto3
+
     raw = boto3.client("secretsmanager").get_secret_value(SecretId=arn)["SecretString"]
     return json.loads(raw)
 

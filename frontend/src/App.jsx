@@ -16,7 +16,8 @@ export default function App() {
   const [, rerender] = useState(0)
   const user = currentUser() || (getConfig().mock && path === '/report' ? MOCK_USER : null)
 
-  const onSignIn = () => (authEnabled() ? signIn('/') : null)
+  // No sign-in button when there is no login (local mode, mock mode)
+  const onSignIn = authEnabled() ? () => signIn('/') : null
   const onSignOut = () => {
     signOut()
     rerender((n) => n + 1)
@@ -34,7 +35,7 @@ export default function App() {
     <div className="page">
       <Header variant={VARIANTS[path] || 'home'} user={user} onSignIn={onSignIn} onSignOut={onSignOut} />
       {page}
-      {(path === '/' || path === '/library') && <Footer />}
+      {(path === '/' || path === '/library') && <Footer local={Boolean(getConfig().local)} />}
     </div>
   )
 }

@@ -1,5 +1,6 @@
-// Runtime config. In AWS, CDK writes /config.json on every deploy.
-// Locally there is no /config.json, so we fall back to /config.local.json (mock mode).
+// Runtime config. On AWS, CDK writes /config.json on every deploy; run.py serves its own
+// /config.json (local: true). With `npm run dev` there is none, so we fall back to
+// /config.local.json (mock mode, sample data).
 let cached
 
 export async function loadConfig() {

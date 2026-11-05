@@ -36,9 +36,9 @@ export function Header({ variant = 'home', user, onSignIn, onSignOut }) {
             <a className="nav__link" {...linkProps('/report')}>Report a scammer</a>
             {user ? (
               <button type="button" className="btn btn--secondary btn--nav" onClick={onSignOut}>Sign out</button>
-            ) : (
+            ) : onSignIn ? (
               <button type="button" className="btn btn--secondary btn--nav" onClick={onSignIn}>Sign in</button>
-            )}
+            ) : null}
           </div>
         )}
         {variant === 'result' && (
@@ -59,11 +59,11 @@ export function Header({ variant = 'home', user, onSignIn, onSignOut }) {
   )
 }
 
-export function Footer() {
+export function Footer({ local = false }) {
   return (
     <footer className="footer">
       <div className="footer__inner">
-        <span>HireGuard · A student project · Deployed on AWS</span>
+        <span>HireGuard · A student project · {local ? 'Running locally' : 'Deployed on AWS'}</span>
         <span>
           Not legal advice. When in doubt, report to <a href="https://reportfraud.ftc.gov" target="_blank" rel="noreferrer">reportfraud.ftc.gov</a>
         </span>

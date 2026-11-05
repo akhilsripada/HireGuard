@@ -3,6 +3,7 @@ import Icon from '../components/Icon'
 import { Field } from '../components/Field'
 import { ApiError, reportContact } from '../lib/api'
 import { authEnabled, currentUser, signIn } from '../lib/auth'
+import { getConfig } from '../lib/config'
 import { linkProps } from '../lib/router'
 import { loadScan } from '../lib/store'
 import { CONTACT_TYPES, PLATFORM_OPTIONS } from '../copy'
@@ -39,10 +40,17 @@ function Sidebar() {
         </p>
         <p className="snippet snippet--lg" style={{ fontSize: 12 }}>sha256 → 9f2c…a71e</p>
       </section>
-      <section className="card">
-        <h2 className="side-title">Why sign in?</h2>
-        <p className="side-text">Scanning is anonymous. Reporting needs an account so one person can't flood the list with fake reports.</p>
-      </section>
+      {getConfig().local ? (
+        <section className="card">
+          <h2 className="side-title">Running locally</h2>
+          <p className="side-text">This copy runs on one computer, so there's no sign-in. Reports and shared messages are saved on that computer only.</p>
+        </section>
+      ) : (
+        <section className="card">
+          <h2 className="side-title">Why sign in?</h2>
+          <p className="side-text">Scanning is anonymous. Reporting needs an account so one person can't flood the list with fake reports.</p>
+        </section>
+      )}
       <section className="ftc">
         <h2>Also tell the FTC</h2>
         <p>

@@ -1,8 +1,9 @@
 """HireGuard: the whole app in one CDK stack.
 
 Website  : S3 (private) + CloudFront (HTTPS, SPA fallback)
-API      : API Gateway HTTP API (throttled, CORS locked to the site) -> 3 Python Lambdas
-Data     : DynamoDB Scans / Reports / DomainCache (on-demand, TTL)
+API      : API Gateway HTTP API (throttled, CORS locked to the site) -> 5 Python Lambdas
+           (scan, report, stats, analyze with Amazon Bedrock, library)
+Data     : DynamoDB Scans / Reports / DomainCache / Library (on-demand, TTL)
 Auth     : Cognito user pool + Hosted UI (only /report needs a login)
 Ops      : CloudWatch dashboard + alarms, optional email alerts
 """
@@ -151,7 +152,7 @@ class HireGuardStack(Stack):
         # ---------- Lambdas ----------
         code = lambda_.Code.from_asset(
             str(BACKEND),
-            exclude=["tests", "tests/**", ".venv", ".venv/**", "**/__pycache__", "*.toml", "requirements*.txt", ".pytest_cache", ".ruff_cache"],
+            exclude=["tests", "tests/**", "local_mode", "local_mode/**", ".venv", ".venv/**", "**/__pycache__", "*.toml", "requirements*.txt", ".pytest_cache", ".ruff_cache"],
         )
         common_env = {
             "SCANS_TABLE": scans.table_name,

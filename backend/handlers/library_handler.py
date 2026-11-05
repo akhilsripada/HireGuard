@@ -10,8 +10,6 @@ wrongly brand a real person. They can only be checked one at a time by someone w
 import base64
 import json
 
-from boto3.dynamodb.conditions import Attr, Key
-
 from hireguard.contacts import CONTACT_TYPES, contact_hash
 from hireguard.scam_types import PRIORITY
 
@@ -56,12 +54,16 @@ def list_library(params: dict) -> dict:
         raise BadRequest("Unknown scam type.")
     kwargs = {
         "IndexName": "byNewest",
-        "KeyConditionExpression": Key("kind").eq("SCAM"),
+        "KeyConditionExpression": "#k = :k",
+        "ExpressionAttributeNames": {"#k": "kind"},
+        "ExpressionAttributeValues": {":k": "SCAM"},
         "ScanIndexForward": False,
         "Limit": PAGE_SIZE,
     }
     if scam_type:
-        kwargs["FilterExpression"] = Attr("scamType").eq(scam_type)
+        kwargs["FilterExpression"] = "#st = :st"
+        kwargs["ExpressionAttributeNames"]["#st"] = "scamType"
+        kwargs["ExpressionAttributeValues"][":st"] = scam_type
         kwargs["Limit"] = PAGE_SIZE * 5  # the filter runs after the limit
     if params.get("cursor"):
         kwargs["ExclusiveStartKey"] = _decode(params["cursor"])
@@ -73,8 +75,11 @@ def list_library(params: dict) -> dict:
 def list_sites() -> dict:
     reports = table("REPORTS_TABLE")
     kwargs = {
-        "FilterExpression": Attr("contactType").eq("DOMAIN") & Attr("reportCount").gte(SITE_MIN_REPORTS) & Attr("displayDomain").exists(),
-        "ProjectionExpression": "displayDomain, reportCount, lastReportedAt, claimedCompanies",
+        "FilterExpression": "#t = :domain AND #c >= :min AND attribute_exists(#d)",
+        "ProjectionExpression": "#d, #c, #l, #cc",
+        "ExpressionAttributeNames": {"#t": "contactType", "#c": "reportCount", "#d": "displayDomain",
+                                     "#l": "lastReportedAt", "#cc": "claimedCompanies"},
+        "ExpressionAttributeValues": {":domain": "DOMAIN", ":min": SITE_MIN_REPORTS},
     }
     sites = []
     while True:

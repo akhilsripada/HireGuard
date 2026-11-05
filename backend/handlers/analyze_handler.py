@@ -14,9 +14,6 @@ import json
 import os
 import time
 
-import boto3
-from botocore.config import Config
-
 from hireguard import config
 
 from .common import BadRequest, log_event, parse_json_body, response
@@ -63,6 +60,9 @@ TOOL = {
 def bedrock():
     global _bedrock
     if _bedrock is None:
+        import boto3
+        from botocore.config import Config
+
         _bedrock = boto3.client("bedrock-runtime", config=Config(connect_timeout=2, read_timeout=20, retries={"max_attempts": 2}))
     return _bedrock
 

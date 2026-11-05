@@ -8,13 +8,11 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-import boto3
-
 from hireguard import config, scan
 from hireguard.domain_checks import rdap_created_date, safe_browsing_is_unsafe
 from hireguard.email_checks import is_valid_email
 
-from .common import FAST, BadRequest, log_event, parse_json_body, response, secret_value, table
+from .common import BadRequest, fast_config, log_event, parse_json_body, response, secret_value, table
 
 TIMEOUT = float(os.environ.get("EXTERNAL_TIMEOUT_S", "1.5"))
 SCAN_TTL_DAYS = 90
@@ -60,10 +58,13 @@ def domain_created_lookup(domain: str) -> Optional[str]:
 
 
 def safe_browsing_lookup_or_none():
-    arn = os.environ.get("SAFE_BROWSING_SECRET_ARN")
-    if not arn:
-        return None
-    key = secret_value(arn).get("apiKey")
+    # Local mode can pass the key directly; on AWS it comes from Secrets Manager.
+    key = os.environ.get("SAFE_BROWSING_API_KEY")
+    if not key:
+        arn = os.environ.get("SAFE_BROWSING_SECRET_ARN")
+        if not arn:
+            return None
+        key = secret_value(arn).get("apiKey")
     if not key or key == "REPLACE_ME":
         return None
     return lambda url: safe_browsing_is_unsafe(url, key, timeout=TIMEOUT)
@@ -72,7 +73,9 @@ def safe_browsing_lookup_or_none():
 def ai_signal_or_none():
     if os.environ.get("AI_SIGNAL_ENABLED", "false").lower() != "true":
         return None
-    comprehend = boto3.client("comprehend", config=FAST)
+    import boto3
+
+    comprehend = boto3.client("comprehend", config=fast_config())
 
     def signal(text: str):
         phrases = comprehend.detect_key_phrases(Text=text[:4500], LanguageCode="en")["KeyPhrases"]

@@ -6,8 +6,6 @@ Scans table's `byDay` index. Compares with the previous period to mark trends.
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 
-from boto3.dynamodb.conditions import Key
-
 from hireguard.scam_types import types_for
 
 from .common import log_event, response, table
@@ -22,9 +20,10 @@ def count_types(start_day: datetime, days: int) -> Counter:
         day = (start_day + timedelta(days=i)).strftime("%Y-%m-%d")
         kwargs = {
             "IndexName": "byDay",
-            "KeyConditionExpression": Key("day").eq(day),
+            "KeyConditionExpression": "#day = :day",
             "ProjectionExpression": "flagIds, #lb",
-            "ExpressionAttributeNames": {"#lb": "label"},
+            "ExpressionAttributeNames": {"#day": "day", "#lb": "label"},
+            "ExpressionAttributeValues": {":day": day},
         }
         while True:
             page = scans.query(**kwargs)

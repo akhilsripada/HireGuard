@@ -2,7 +2,8 @@
 import json
 from contextlib import contextmanager
 
-from handlers import analyze_handler, library_handler, report_handler, scan_handler, stats_handler
+from handlers import analyze_handler, common, library_handler, report_handler, scan_handler, stats_handler
+from local_mode.store import LocalDatabase
 
 MOCKUP = (
     "Hi! Your resume was selected for a Remote Data Entry Associate role at Amazon ($42/hr). "
@@ -12,64 +13,19 @@ MOCKUP = (
 )
 
 
-class FakeTable:
-    def __init__(self, key):
-        self.key, self.items = key, {}
-
-    def get_item(self, Key):
-        item = self.items.get(Key[self.key])
-        return {"Item": dict(item)} if item else {}
-
-    def put_item(self, Item):
-        self.items[Item[self.key]] = dict(Item)
-
-    def update_item(self, Key, UpdateExpression, ExpressionAttributeNames, ExpressionAttributeValues, ReturnValues):
-        item = self.items.setdefault(Key[self.key], {self.key: Key[self.key]})
-        v = ExpressionAttributeValues
-        item["reportCount"] = item.get("reportCount", 0) + 1
-        item["contactType"] = v[":t"]
-        item["lastReportedAt"] = v[":l"]
-        item["platforms"] = set(item.get("platforms", set())) | v[":p"]
-        if ":cc" in v:
-            item["claimedCompanies"] = set(item.get("claimedCompanies", set())) | v[":cc"]
-        if ":d" in v:
-            item["displayDomain"] = v[":d"]
-        return {"Attributes": dict(item)}
-
-    def query(self, IndexName, KeyConditionExpression, **kw):
-        if IndexName == "byDay":
-            day = KeyConditionExpression._values[1]
-            return {"Items": [i for i in self.items.values() if i.get("day") == day]}
-        # byNewest: library entries, newest first
-        items = sorted(self.items.values(), key=lambda i: i["createdAt"], reverse=kw.get("ScanIndexForward", True) is not True)
-        return {"Items": items[: kw.get("Limit", 1000)]}
-
-    def scan(self, **_):
-        # Emulates the "reported websites" filter used by /library/sites
-        return {"Items": [i for i in self.items.values()
-                          if i.get("contactType") == "DOMAIN" and i.get("reportCount", 0) >= 3 and i.get("displayDomain")]}
-
-
 @contextmanager
 def fake_aws():
-    tables = {
-        "SCANS_TABLE": FakeTable("scanId"),
-        "REPORTS_TABLE": FakeTable("contactHash"),
-        "DOMAIN_CACHE_TABLE": FakeTable("domain"),
-        "LIBRARY_TABLE": FakeTable("entryId"),
-    }
-    saved = {}
-    for mod in (scan_handler, report_handler, stats_handler, library_handler):
-        saved[mod] = mod.table
-        mod.table = tables.__getitem__
+    """Handlers backed by the local SQLite store (in memory) instead of DynamoDB; RDAP stubbed."""
+    db = LocalDatabase()
+    common.use_tables(db.table)
     saved_rdap = scan_handler.rdap_created_date
     scan_handler.rdap_created_date = lambda d, timeout: "2026-10-25"
     try:
-        yield tables
+        yield db.tables
     finally:
-        for mod, fn in saved.items():
-            mod.table = fn
+        common.use_tables(None)
         scan_handler.rdap_created_date = saved_rdap
+        db.close()
 
 
 def post(body, claims=None):
@@ -91,9 +47,9 @@ def test_scan_mockup_message():
         assert resp["statusCode"] == 200
         assert out["label"] == "LIKELY_SCAM" and out["score"] == 100
         assert "NEW_DOMAIN" in {f["id"] for f in out["flags"]}
-        saved = t["SCANS_TABLE"].items[out["scanId"]]
+        saved = t["SCANS_TABLE"].get_item(Key={"scanId": out["scanId"]})["Item"]
         assert "message" not in saved and MOCKUP not in json.dumps(saved)
-        assert t["DOMAIN_CACHE_TABLE"].items["amazon-remote-jobs.net"]["createdDate"] == "2026-10-25"
+        assert t["DOMAIN_CACHE_TABLE"].get_item(Key={"domain": "amazon-remote-jobs.net"})["Item"]["createdDate"] == "2026-10-25"
 
 
 def test_scan_validation():
@@ -117,13 +73,23 @@ def test_report_then_scan_shows_community_flag():
         r1 = report_handler.handler(post(report, {"sub": "user-1"}), None)
         r2 = report_handler.handler(post(report, {"sub": "user-2"}), None)
         assert body_of(r1)["reportCount"] == 1 and body_of(r2)["reportCount"] == 2
-        stored = json.dumps(list(t["REPORTS_TABLE"].items.values()), default=list)
+        stored = json.dumps(t["REPORTS_TABLE"].scan()["Items"], default=list)
         assert "careers.amazon.hr" not in stored.lower()
 
         out = body_of(scan_handler.handler(post({"message": "Hello, are you open to a remote job offer?",
                                                  "senderEmail": "careers.amazon.hr@gmail.com"}), None))
         assert out["communityReports"] == 2
         assert "COMMUNITY_REPORTED" in {f["id"] for f in out["flags"]}
+
+
+def test_report_counts_platforms_and_money_lost():
+    with fake_aws() as t:
+        base = {"contactType": "PHONE", "contact": "+1 555 010 2000", "claimedCompany": "Amazon"}
+        report_handler.handler(post({**base, "platform": "TEXT", "lostMoney": True}, {"sub": "a"}), None)
+        report_handler.handler(post({**base, "platform": "CHAT_APP"}, {"sub": "b"}), None)
+        item = t["REPORTS_TABLE"].scan()["Items"][0]
+        assert item["reportCount"] == 2 and item["lostMoneyCount"] == 1
+        assert item["platforms"] == {"TEXT", "CHAT_APP"} and item["claimedCompanies"] == {"Amazon"}
 
 
 def test_report_validation():
@@ -204,6 +170,25 @@ def test_lookup_one_contact():
         assert miss == {"reportCount": 0}
         bad = library_handler.handler({"routeKey": "POST /lookup", "body": json.dumps({"contactType": "FAX", "contact": "1"})}, None)
         assert bad["statusCode"] == 400
+
+
+def test_library_pages_and_filters():
+    with fake_aws():
+        for i in range(25):
+            flags = ["TASK_SCAM"] if i % 5 == 0 else ["PAY_UPFRONT"]
+            report = {"contactType": "EMAIL", "contact": f"s{i}@gmail.com",
+                      "share": {"message": MOCKUP, "label": "LIKELY_SCAM", "score": 90, "flagIds": flags}}
+            report_handler.handler(post(report, {"sub": "u"}), None)
+        first = body_of(library_handler.handler(get("GET /library"), None))
+        assert len(first["items"]) == 20 and first["cursor"]
+        second = body_of(library_handler.handler(get("GET /library", {"cursor": first["cursor"]}), None))
+        assert len(second["items"]) == 5 and second["cursor"] is None
+        ids = {i["id"] for i in first["items"]} | {i["id"] for i in second["items"]}
+        assert len(ids) == 25
+        dates = [i["createdAt"] for i in first["items"] + second["items"]]
+        assert dates == sorted(dates, reverse=True)
+        tasks = body_of(library_handler.handler(get("GET /library", {"type": "TASK_SCAMS"}), None))
+        assert len(tasks["items"]) == 5 and {i["scamType"] for i in tasks["items"]} == {"TASK_SCAMS"}
 
 
 def test_library_rejects_bad_filters():

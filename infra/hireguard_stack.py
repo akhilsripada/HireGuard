@@ -228,16 +228,20 @@ class HireGuardStack(Stack):
             auto_deploy=True,
             throttle=apigw.ThrottleSettings(rate_limit=10, burst_limit=20),
         )
-        # AI calls cost money: tighter limit on that one route
-        cfn_stage = stage_.node.default_child
-        cfn_stage.route_settings = {
-            "POST /analyze": {"ThrottlingRateLimit": 2, "ThrottlingBurstLimit": 4},
-        }
+
         jwt_auth = authorizers.HttpUserPoolAuthorizer("UserPoolAuth", user_pool, user_pool_clients=[client])
         api.add_routes(path="/scan", methods=[apigw.HttpMethod.POST], integration=integrations.HttpLambdaIntegration("ScanInt", scan_fn))
         api.add_routes(path="/report", methods=[apigw.HttpMethod.POST], integration=integrations.HttpLambdaIntegration("ReportInt", report_fn), authorizer=jwt_auth)
         api.add_routes(path="/stats", methods=[apigw.HttpMethod.GET], integration=integrations.HttpLambdaIntegration("StatsInt", stats_fn))
-        api.add_routes(path="/analyze", methods=[apigw.HttpMethod.POST], integration=integrations.HttpLambdaIntegration("AnalyzeInt", analyze_fn))
+        analyze_routes = api.add_routes(path="/analyze", methods=[apigw.HttpMethod.POST], integration=integrations.HttpLambdaIntegration("AnalyzeInt", analyze_fn))
+        # AI calls cost money: tighter limit on that one route.
+        # The stage must be updated after the route exists, so add an explicit dependency.
+        cfn_stage = stage_.node.default_child
+        cfn_stage.route_settings = {
+            "POST /analyze": {"ThrottlingRateLimit": 2, "ThrottlingBurstLimit": 4},
+        }
+        for route in analyze_routes:
+            cfn_stage.add_dependency(route.node.default_child)
         library_int = integrations.HttpLambdaIntegration("LibraryInt", library_fn)
         api.add_routes(path="/library", methods=[apigw.HttpMethod.GET], integration=library_int)
         api.add_routes(path="/library/sites", methods=[apigw.HttpMethod.GET], integration=library_int)

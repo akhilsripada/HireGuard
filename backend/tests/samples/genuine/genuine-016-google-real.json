@@ -1,0 +1,10 @@
+{
+  "id": "genuine-016-google-real",
+  "message": "Hi Dev, thanks for applying to the Associate Product Manager program at Google. Your application has moved to the next stage. You'll receive an email from our scheduling team to book your first interview.",
+  "senderEmail": "noreply@google.com",
+  "link": "https://careers.google.com/jobs/results/1234",
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

@@ -1,0 +1,37 @@
+{
+  "scanId": "mock-suspicious",
+  "score": 55,
+  "label": "SUSPICIOUS",
+  "flags": [
+    {
+      "id": "NO_INTERVIEW",
+      "points": 20,
+      "title": "Hires you without a real interview",
+      "why": "Legitimate employers interview candidates before making an offer.",
+      "evidence": "We have an urgent opening for a remote coordinator and you can start immediately."
+    },
+    {
+      "id": "FREE_EMAIL_HR",
+      "points": 15,
+      "title": "\"HR\" address on a free email service",
+      "why": "Company HR and recruiting teams normally write from the company's own domain, not gmail.com.",
+      "evidence": "hiring.team.jobs@gmail.com"
+    },
+    {
+      "id": "URGENCY",
+      "points": 10,
+      "title": "Pressure to respond fast",
+      "why": "Urgency is used to stop you from checking the offer before you act.",
+      "evidence": "Please respond within 12 hours if interested."
+    },
+    {
+      "id": "MULTIPLE_SIGNS",
+      "points": 10,
+      "title": "Several warning signs together",
+      "why": "One sign alone can be innocent. Several different ones in the same message is a strong scam pattern.",
+      "evidence": "3 different warning signs in this message"
+    }
+  ],
+  "communityReports": 0,
+  "checksSkipped": []
+}

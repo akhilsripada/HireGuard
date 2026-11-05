@@ -1,0 +1,10 @@
+{
+  "id": "genuine-007-rejection",
+  "message": "Thank you for taking the time to interview with us for the Product Designer role. After careful consideration we have decided to move forward with another candidate. We wish you the best in your search.",
+  "senderEmail": "careers@woodgrove.example",
+  "link": null,
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

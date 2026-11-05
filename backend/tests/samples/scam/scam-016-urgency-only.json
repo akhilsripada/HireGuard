@@ -1,0 +1,12 @@
+{
+  "id": "scam-016-urgency-only",
+  "message": "We have an urgent opening for a remote coordinator. Please respond within 12 hours if interested, limited slots.",
+  "senderEmail": null,
+  "link": null,
+  "expectedLabel": null,
+  "mustFire": [
+    "URGENCY"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

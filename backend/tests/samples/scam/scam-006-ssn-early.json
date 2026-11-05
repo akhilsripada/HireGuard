@@ -1,0 +1,13 @@
+{
+  "id": "scam-006-ssn-early",
+  "message": "Good news! You are selected for the Customer Support position at Walmart. To process payroll please reply with your SSN, bank account number and routing number today.",
+  "senderEmail": "walmart.careers.dept@yahoo.com",
+  "link": null,
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "ASKS_SENSITIVE_DATA",
+    "FREE_EMAIL_BIG_BRAND"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

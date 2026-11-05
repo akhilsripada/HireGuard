@@ -1,0 +1,29 @@
+{
+  "range": "week",
+  "types": [
+    {
+      "type": "TASK_SCAMS",
+      "count": 128,
+      "previousCount": 96,
+      "trend": "RISING"
+    },
+    {
+      "type": "PAY_FOR_EQUIPMENT",
+      "count": 94,
+      "previousCount": 101,
+      "trend": "COMMON"
+    },
+    {
+      "type": "BRAND_IMPERSONATION",
+      "count": 87,
+      "previousCount": 61,
+      "trend": "RISING"
+    },
+    {
+      "type": "RESHIPPING",
+      "count": 52,
+      "previousCount": 58,
+      "trend": "COMMON"
+    }
+  ]
+}

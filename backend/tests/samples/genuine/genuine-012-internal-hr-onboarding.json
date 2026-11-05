@@ -1,0 +1,10 @@
+{
+  "id": "genuine-012-internal-hr-onboarding",
+  "message": "Welcome to the team! Your first day is Monday. Please complete your direct deposit and tax forms in Workday before then. IT will ship your laptop this week; let us know if it hasn't arrived by Friday.",
+  "senderEmail": "onboarding@wingtip.example",
+  "link": null,
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

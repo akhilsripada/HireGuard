@@ -1,0 +1,49 @@
+/* Design tokens: values from the HireGuard UI spec. Use these, never raw hex in components. */
+:root {
+  --bg-page: #F5F7FA;
+  --bg-card: #FFFFFF;
+  --bg-code: #F8FAFC;
+  --border: #E2E8F0;
+  --border-input: #CBD5E1;
+  --text: #0F172A;
+  --text-body: #334155;
+  --text-muted: #475569;
+  --text-hint: #64748B;
+
+  --accent: #1D4ED8;
+  --accent-dark: #1E3A8A;
+  --accent-tint: #E0E7FF;
+  --accent-soft: #EFF4FF;
+  --accent-border: #C7D7FE;
+
+  --red: #B42318;
+  --red-text: #7A271A;
+  --red-tint: #FEF3F2;
+  --red-border: #FECDCA;
+  --red-tag-bg: #FEE4E2;
+  --red-tag-fg: #912018;
+
+  --amber: #B54708;
+  --amber-tag-bg: #FEF0C7;
+  --amber-tag-fg: #7A2E0E;
+  --amber-tint: #FFFAEB;
+  --amber-border: #FEDF89;
+  --amber-icon: #93370D;
+
+  --grey-tag-bg: #E2E8F0;
+  --grey-tag-fg: #334155;
+
+  --green: #067647;
+  --green-tint: #ECFDF3;
+  --green-border: #ABEFC6;
+
+  --meter-green: #12B76A;
+  --meter-amber: #F79009;
+  --meter-red: #D92D20;
+
+  --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --shadow-panel: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06);
+  --content-width: 1120px;
+}

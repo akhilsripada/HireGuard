@@ -1,0 +1,72 @@
+{
+  "scanId": "mock-likely-scam",
+  "score": 100,
+  "label": "LIKELY_SCAM",
+  "flags": [
+    {
+      "id": "PAY_UPFRONT",
+      "points": 60,
+      "title": "Asks you to pay before you start",
+      "why": "Real employers never ask you to buy equipment, training or software up front, even with a promise of reimbursement.",
+      "evidence": "Once hired, purchase your home-office kit ($450) through our approved vendor and you'll be reimbursed with your first check."
+    },
+    {
+      "id": "FREE_EMAIL_BIG_BRAND",
+      "points": 35,
+      "title": "Sender email does not match the company",
+      "why": "The message claims to be from Amazon but was sent from a free gmail.com address. Big companies email from their own domain.",
+      "evidence": "careers.amazon.hr@gmail.com → claims \"Amazon\""
+    },
+    {
+      "id": "LOOKALIKE_DOMAIN",
+      "points": 35,
+      "title": "Link goes to a lookalike domain",
+      "why": "The link's domain looks like Amazon but isn't one of its official domains.",
+      "evidence": "amazon-remote-jobs.net → imitates amazon.com"
+    },
+    {
+      "id": "COMMUNITY_REPORTED",
+      "points": 30,
+      "title": "Reported as a scam by other job seekers",
+      "why": "Other HireGuard users reported this sender or website as a scam.",
+      "evidence": "Reported 14 times"
+    },
+    {
+      "id": "CHAT_APP_INTERVIEW",
+      "points": 20,
+      "title": "Interview only over a chat app",
+      "why": "Scammers avoid phone or video calls so they can't be identified. Real recruiters schedule calls or video interviews.",
+      "evidence": "Interviews are conducted on Telegram - add @amzn_hr_team."
+    },
+    {
+      "id": "TOO_GOOD_PAY",
+      "points": 20,
+      "title": "Pay that's too good for the work",
+      "why": "Very high pay for simple, no-experience work is a common lure.",
+      "evidence": "Your resume was selected for a Remote Data Entry Associate role at Amazon ($42/hr)."
+    },
+    {
+      "id": "NEW_DOMAIN",
+      "points": 20,
+      "title": "Domain was registered very recently",
+      "why": "Scam sites are often created days before the messages go out. Real companies' domains are usually years old.",
+      "evidence": "amazon-remote-jobs.net · registered 9 days ago"
+    },
+    {
+      "id": "URGENCY",
+      "points": 10,
+      "title": "Pressure to respond fast",
+      "why": "Urgency is used to stop you from checking the offer before you act.",
+      "evidence": "Please respond within 2 hours to keep your spot."
+    },
+    {
+      "id": "MULTIPLE_SIGNS",
+      "points": 10,
+      "title": "Several warning signs together",
+      "why": "One sign alone can be innocent. Several different ones in the same message is a strong scam pattern.",
+      "evidence": "8 different warning signs in this message"
+    }
+  ],
+  "communityReports": 14,
+  "checksSkipped": []
+}

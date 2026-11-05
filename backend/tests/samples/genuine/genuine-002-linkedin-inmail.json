@@ -1,0 +1,10 @@
+{
+  "id": "genuine-002-linkedin-inmail",
+  "message": "Hi Sam, I came across your profile on LinkedIn and think you'd be a great fit for a Data Analyst opening at Northwind Analytics. The role is hybrid in Austin and pays $85,000-$100,000. Would you be open to a 20-minute video call this week?",
+  "senderEmail": "jordan.lee@northwind.example",
+  "link": null,
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

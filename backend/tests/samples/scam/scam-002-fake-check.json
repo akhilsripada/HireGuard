@@ -1,0 +1,12 @@
+{
+  "id": "scam-002-fake-check",
+  "message": "Congratulations, you have been hired as an Administrative Assistant. We will mail you a check for $2,800. Deposit the check using mobile deposit, keep $400 as your first week pay and send the remaining balance to our equipment supplier via Zelle.",
+  "senderEmail": "hr@brightpath-staffing.example",
+  "link": null,
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "FAKE_CHECK"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

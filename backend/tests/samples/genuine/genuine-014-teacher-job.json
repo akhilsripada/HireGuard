@@ -1,0 +1,10 @@
+{
+  "id": "genuine-014-teacher-job",
+  "message": "Thank you for applying to Lincoln Elementary. We would like to invite you for an interview with the principal and a short teaching demo next week. Please reply with two times that work for you.",
+  "senderEmail": "hr@lincoln-district.example",
+  "link": null,
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

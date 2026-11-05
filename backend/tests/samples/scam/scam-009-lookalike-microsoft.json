@@ -1,0 +1,13 @@
+{
+  "id": "scam-009-lookalike-microsoft",
+  "message": "Dear candidate, Microsoft talent team would like to offer you a remote data analyst role. Download the onboarding app from our portal and buy the required laptop from our preferred vendor.",
+  "senderEmail": "talent@micr0soft-careers.com",
+  "link": "https://micr0soft-careers.com/onboard",
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "LOOKALIKE_DOMAIN",
+    "PAY_UPFRONT"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

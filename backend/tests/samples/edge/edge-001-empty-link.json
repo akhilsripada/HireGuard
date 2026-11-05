@@ -1,0 +1,10 @@
+{
+  "id": "edge-001-empty-link",
+  "message": "Hi, we'd like to schedule an interview for the analyst role next week.",
+  "senderEmail": null,
+  "link": "",
+  "expectedLabel": null,
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

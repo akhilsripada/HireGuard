@@ -1,0 +1,13 @@
+{
+  "id": "scam-007-no-interview-telegram",
+  "message": "You have been hired without an interview for our remote assistant role. Message our manager on WhatsApp to start immediately. Pay is $45/hr.",
+  "senderEmail": null,
+  "link": null,
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "NO_INTERVIEW",
+    "CHAT_APP_INTERVIEW"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

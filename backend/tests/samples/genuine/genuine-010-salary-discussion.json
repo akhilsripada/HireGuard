@@ -1,0 +1,10 @@
+{
+  "id": "genuine-010-salary-discussion",
+  "message": "Thanks for the great conversation today. As discussed, the base salary for the Senior Engineer role is $165,000 plus equity. The next step is an onsite interview loop with four team members.",
+  "senderEmail": "recruiter@proseware.example",
+  "link": null,
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "genuine-011-staffing-agency",
+  "message": "We have a temporary warehouse associate role in Columbus, 40 hours a week, $19/hr. Interviews are in person at our branch office on Main Street. Bring two forms of ID on your first day for I-9 verification.",
+  "senderEmail": "jobs@coho-staffing.example",
+  "link": null,
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

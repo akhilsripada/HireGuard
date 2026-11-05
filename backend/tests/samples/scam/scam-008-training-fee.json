@@ -1,0 +1,13 @@
+{
+  "id": "scam-008-training-fee",
+  "message": "Thank you for applying. Before you start there is a $95 training fee for the certification course. Pay the fee to secure your position. Only 3 spots left, reply now.",
+  "senderEmail": "onboarding@careerfast-hr.example",
+  "link": null,
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "PAY_UPFRONT",
+    "URGENCY"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

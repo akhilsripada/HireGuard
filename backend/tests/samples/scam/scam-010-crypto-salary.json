@@ -1,0 +1,13 @@
+{
+  "id": "scam-010-crypto-salary",
+  "message": "We pay all remote staff in Bitcoin. To activate your employee wallet, send a $50 activation fee in crypto. Interview will be done over text chat.",
+  "senderEmail": null,
+  "link": null,
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "GIFT_CARD_CRYPTO",
+    "PAY_UPFRONT"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

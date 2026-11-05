@@ -1,0 +1,14 @@
+{
+  "id": "scam-012-google-impersonation",
+  "message": "Hello, I am a recruiter for Google. You have been selected for a remote typing job, $38/hr, flexible hours. Interviews are done on Telegram. Please send a copy of your driver's license to proceed.",
+  "senderEmail": "google.recruit.team@gmail.com",
+  "link": null,
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "FREE_EMAIL_BIG_BRAND",
+    "CHAT_APP_INTERVIEW",
+    "ASKS_SENSITIVE_DATA"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

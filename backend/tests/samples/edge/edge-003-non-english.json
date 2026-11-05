@@ -1,0 +1,10 @@
+{
+  "id": "edge-003-non-english",
+  "message": "Hola, gracias por postularte. Nos gustaría programar una entrevista por videollamada la próxima semana.",
+  "senderEmail": null,
+  "link": null,
+  "expectedLabel": null,
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+frontend/dist/
+
+# CDK
+cdk.out/
+cdk.context.json
+cdk-outputs.json
+
+# Secrets and local env
+.env
+.env.*
+*.pem
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

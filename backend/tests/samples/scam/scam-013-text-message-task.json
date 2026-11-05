@@ -1,0 +1,13 @@
+{
+  "id": "scam-013-text-message-task",
+  "message": "Hi, this is Lisa from the HR team. Part-time online job, earn $500 a day by liking videos for commission. Add me on WhatsApp to begin. Limited positions available.",
+  "senderEmail": null,
+  "link": null,
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "TASK_SCAM",
+    "CHAT_APP_INTERVIEW"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

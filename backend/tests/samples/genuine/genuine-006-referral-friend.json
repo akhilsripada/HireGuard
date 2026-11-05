@@ -1,0 +1,10 @@
+{
+  "id": "genuine-006-referral-friend",
+  "message": "Hey! Saw your post that you're looking. My team is hiring a frontend engineer, I can refer you internally. Send me your resume and I'll submit it through our careers site.",
+  "senderEmail": "mike.chen@adatum.example",
+  "link": null,
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

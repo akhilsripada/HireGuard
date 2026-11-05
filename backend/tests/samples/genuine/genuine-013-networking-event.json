@@ -1,0 +1,10 @@
+{
+  "id": "genuine-013-networking-event",
+  "message": "Hi Alex, it was great meeting you at the career fair. Our engineering manager would love to chat about the Cloud Support Associate role. Are you free for a call on Thursday?",
+  "senderEmail": "recruiting@relecloud.example",
+  "link": null,
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

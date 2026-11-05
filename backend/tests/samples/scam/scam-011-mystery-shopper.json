@@ -1,0 +1,13 @@
+{
+  "id": "scam-011-mystery-shopper",
+  "message": "Mystery shopper job: we will send you a check for $1,950. Cash the check, evaluate a Walmart store, buy gift cards with the rest and send us the codes.",
+  "senderEmail": "shopper.program.us@gmail.com",
+  "link": null,
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "FAKE_CHECK",
+    "GIFT_CARD_CRYPTO"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

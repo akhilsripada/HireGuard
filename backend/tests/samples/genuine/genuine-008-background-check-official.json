@@ -1,0 +1,10 @@
+{
+  "id": "genuine-008-background-check-official",
+  "message": "As the final step, our background check vendor, Sterling, will email you a secure link to complete the check. There is no cost to you. Please do not reply to this email with personal information.",
+  "senderEmail": "hr@tailspin.example",
+  "link": null,
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

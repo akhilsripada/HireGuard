@@ -1,0 +1,10 @@
+{
+  "id": "genuine-015-nurse-recruiter",
+  "message": "Hi Maria, I'm a nurse recruiter at Riverside Health. We have night-shift RN openings with a sign-on bonus. I'd love to schedule a phone screen to tell you more about the unit.",
+  "senderEmail": "maria.recruiting@riversidehealth.example",
+  "link": null,
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

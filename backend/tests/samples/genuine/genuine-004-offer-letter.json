@@ -1,0 +1,10 @@
+{
+  "id": "genuine-004-offer-letter",
+  "message": "Congratulations! Attached is your formal offer letter for the Junior Accountant role. Your start date is March 3. Your laptop and equipment will be shipped to your home address at no cost to you. Please sign the offer in our HR portal.",
+  "senderEmail": "people-ops@fabrikam.example",
+  "link": null,
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

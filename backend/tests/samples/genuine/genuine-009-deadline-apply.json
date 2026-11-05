@@ -1,0 +1,10 @@
+{
+  "id": "genuine-009-deadline-apply",
+  "message": "Applications for our summer internship close this Friday. Apply through our careers page and expect to hear back within two weeks. Interviews are held on Microsoft Teams.",
+  "senderEmail": "university@litware.example",
+  "link": "https://careers.litware.example/internships",
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "scam-001-equipment-amazon",
+  "message": "Hi! Your resume was selected for a Remote Data Entry Associate role at Amazon ($42/hr). Interviews are conducted on Telegram - add @amzn_hr_team. Once hired, purchase your home-office kit ($450) through our approved vendor and you'll be reimbursed with your first check. Please respond within 2 hours to keep your spot.",
+  "senderEmail": "careers.amazon.hr@gmail.com",
+  "link": "https://amazon-remote-jobs.net/start",
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "PAY_UPFRONT",
+    "FREE_EMAIL_BIG_BRAND",
+    "CHAT_APP_INTERVIEW"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "edge-005-lookalike-chars",
+  "message": "Amaz0n HR here, your job is ready.",
+  "senderEmail": "hr@amaz0n.com",
+  "link": null,
+  "expectedLabel": null,
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

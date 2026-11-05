@@ -1,0 +1,10 @@
+{
+  "id": "genuine-003-interview-schedule",
+  "message": "Thank you for your interest in the Marketing Coordinator position. We would like to invite you to a video interview on Zoom next Tuesday at 2 pm. Please confirm your availability by Friday.",
+  "senderEmail": "talent@contoso.example",
+  "link": null,
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

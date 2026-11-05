@@ -1,0 +1,10 @@
+{
+  "id": "genuine-001-amazon-real",
+  "message": "Hi Priya, thanks for applying to the Software Development Engineer role at Amazon. We'd like to schedule a 45-minute phone screen with a member of the team. Please pick a time that works for you using the scheduling link. Best, Amazon Recruiting",
+  "senderEmail": "recruiting@amazon.com",
+  "link": "https://www.amazon.jobs/en/jobs/123456",
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "scam-015-deloitte-lookalike",
+  "message": "Deloitte HR here. You are hired immediately for the remote auditor role. Fill the form at our site with your bank details for direct deposit.",
+  "senderEmail": "hr@deloitte-hiring.net",
+  "link": "https://deloitte-hiring.net/form",
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "LOOKALIKE_DOMAIN",
+    "NO_INTERVIEW",
+    "ASKS_SENSITIVE_DATA"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

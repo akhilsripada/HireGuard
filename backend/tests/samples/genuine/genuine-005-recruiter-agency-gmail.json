@@ -1,0 +1,10 @@
+{
+  "id": "genuine-005-recruiter-agency-gmail",
+  "message": "Hello, I'm an independent recruiter working with several healthcare clinics in Ohio. I have a Medical Billing Specialist opening, full time, $24/hr. Can we set up a quick phone call to discuss your experience?",
+  "senderEmail": "anna.recruits.ohio@gmail.com",
+  "link": null,
+  "expectedLabel": "SAFE",
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

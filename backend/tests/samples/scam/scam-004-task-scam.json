@@ -1,0 +1,13 @@
+{
+  "id": "scam-004-task-scam",
+  "message": "Earn $300 a day from home! Complete 40 simple tasks rating hotels to unlock your commission. New members must top up their account with USDT to start the next set of tasks.",
+  "senderEmail": null,
+  "link": "https://hotel-boost-app.example/join",
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "TASK_SCAM",
+    "GIFT_CARD_CRYPTO"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

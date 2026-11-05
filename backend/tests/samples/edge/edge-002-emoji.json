@@ -1,0 +1,10 @@
+{
+  "id": "edge-002-emoji",
+  "message": "🚀🚀 Amazing remote job 💰💰 message me 👉👉",
+  "senderEmail": null,
+  "link": null,
+  "expectedLabel": null,
+  "mustFire": [],
+  "mustNotFire": [],
+  "source": "Written by the team"
+}

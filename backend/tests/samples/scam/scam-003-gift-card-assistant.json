@@ -1,0 +1,12 @@
+{
+  "id": "scam-003-gift-card-assistant",
+  "message": "Hello, I am looking for a personal assistant to help with errands. First task: buy three $100 Apple gift cards and send me photos of the back of the cards. You will be paid $800 per week.",
+  "senderEmail": "david.m.hiring@outlook.com",
+  "link": null,
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "GIFT_CARD_CRYPTO"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

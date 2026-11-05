@@ -1,0 +1,12 @@
+{
+  "id": "scam-005-reshipping",
+  "message": "We are hiring a Package Inspector to work from home. You will receive parcels at your address, check them and reship them using the prepaid labels we email you. $2,500 per month, no experience needed.",
+  "senderEmail": "logistics.team.hiring@gmail.com",
+  "link": null,
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "RESHIPPING"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}

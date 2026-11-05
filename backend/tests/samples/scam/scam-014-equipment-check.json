@@ -1,0 +1,13 @@
+{
+  "id": "scam-014-equipment-check",
+  "message": "Welcome aboard! We will send you a check to purchase your work laptop and software from our approved vendor. Do not use any other store. Confirm within 24 hours.",
+  "senderEmail": "it.department.onboard@outlook.com",
+  "link": null,
+  "expectedLabel": "LIKELY_SCAM",
+  "mustFire": [
+    "PAY_UPFRONT",
+    "URGENCY"
+  ],
+  "mustNotFire": [],
+  "source": "Written by the team from public FTC/BBB job-scam descriptions"
+}
